@@ -2,6 +2,8 @@ import Navbar from "./components/navbar.component";
 import { Routes, Route } from "react-router-dom";
 import UserAuthForm from "./pages/userAuthForm.page";
 const App = () => {
+    //Bleh
+    //bleh 2
     return (
         <Routes>
             <Route path='/' element={<Navbar />}>
