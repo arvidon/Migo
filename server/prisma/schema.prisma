@@ -30,7 +30,7 @@ model Blog{
   total_reads Int @default(0)
   total_parent_comments Int @default(0)
 
-  comment Comment[]
+  comments Comment[]
 
   draft Boolean @default(false)
   publishedAt DateTime @default(now())
