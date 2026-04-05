@@ -1,7 +1,7 @@
 import express from 'express'
-import {signUpSchema, signInSchema} from "./types"
+import {signUpSchema, signInSchema} from "./types.js"
 import bcrypt from 'bcrypt'
-import prisma from "./db"
+import prisma from "./db.js"
 import jwt from 'jsonwebtoken'
 
 
