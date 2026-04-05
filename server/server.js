@@ -21,7 +21,7 @@ app.post('/signup', async(req, res) => {
             })
         }
 
-        const {fullname: fullName, email, password, username} = result.data
+        const {fullname: fullName, email, password} = result.data
 
         const existingUser = await prisma.user.findFirst({
             where:{
@@ -84,7 +84,6 @@ app.post('/signup', async(req, res) => {
                 id: user.id,
                 fullName: user.fullName,
                 email: user.email,
-                username: user.username,
                 profile_img: user.profile_img
             }
         })
@@ -150,7 +149,6 @@ app.post('/signin', async(req, res) =>{
                 id: user.id,
                 fullName: user.fullName,
                 email: user.email,
-                username: user.username,
                 profile_img: user.profile_img
             }
         })
