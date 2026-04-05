@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import express from 'express'
 import {signUpSchema, signInSchema} from "./types.js"
 import bcrypt from 'bcrypt'
@@ -20,7 +21,7 @@ app.post('/signup', async(req, res) => {
             })
         }
 
-        const {fullname, email, password, username} = result.data
+        const {fullname: fullName, email, password, username} = result.data
 
         const existingUser = await prisma.user.findFirst({
             where:{
@@ -69,7 +70,7 @@ app.post('/signup', async(req, res) => {
 
         const user = await prisma.user.create({
             data:{
-                fullname,
+                fullName,
                 email,
                 password: hashPassword,
                 username,
@@ -81,7 +82,7 @@ app.post('/signup', async(req, res) => {
             success: true,
             user: {
                 id: user.id,
-                fullname: user.fullname,
+                fullName: user.fullName,
                 email: user.email,
                 username: user.username,
                 profile_img: user.profile_img
@@ -147,7 +148,7 @@ app.post('/signin', async(req, res) =>{
             token,
             user: {
                 id: user.id,
-                fullname: user.fullname,
+                fullName: user.fullName,
                 email: user.email,
                 username: user.username,
                 profile_img: user.profile_img
