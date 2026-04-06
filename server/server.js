@@ -4,11 +4,13 @@ import {signUpSchema, signInSchema} from "./types.js"
 import bcrypt from 'bcrypt'
 import prisma from "./db.js"
 import jwt from 'jsonwebtoken'
+import cors from 'cors'
 
 
 const app = express()
 const PORT = 3003
 app.use(express.json())
+app.use(cors())
 
 app.post('/signup', async(req, res) => {
     try{
@@ -21,7 +23,7 @@ app.post('/signup', async(req, res) => {
             })
         }
 
-        const {fullname: fullName, email, password} = result.data
+        const {fullname: fullName, email, password, username} = result.data
 
         const existingUser = await prisma.user.findFirst({
             where:{

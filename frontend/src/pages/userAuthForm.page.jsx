@@ -2,16 +2,31 @@ import InputBox from "../components/input.component"
 import googleIcon from "../imgs/google.png"
 import { Link } from "react-router-dom"
 import AnimationWrapper from "../common/page-animation"
-import { useRef } from "react"
-import { Toaster, toast } from "react-hot-toast";
-
+import { useRef, useContext } from "react"
+import { Toaster, toast } from "react-hot-toast"
+import axios from "axios"
+import { storeInSession } from "../common/session"
+import { userContext } from "../App"
 
 const UserAuthForm = ({type}) => {
 
     const authForm = useRef()
 
-    const userAuthThroughServer = (serverRoute, formData) => {
+    let {userAuth: {access_token}, setUserAuth} = useContext(userContext)
+    console.log(access_token)
 
+    const userAuthThroughServer = (serverRoute, formData) => {
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + serverRoute, formData).then(({data}) => {
+            storeInSession("user", JSON.stringify(data))
+            setUserAuth(data)
+        }).catch(({ response }) => {
+            console.log("Error response:", response)
+            toast.error(
+                response?.data?.message ||
+                response?.data?.errors?.message ||
+                "Something went wrong"
+            )
+        })
     }
 
     const handleSubmit = (e) => {
@@ -26,7 +41,7 @@ const UserAuthForm = ({type}) => {
         let form = new FormData(authForm.current)
         let formData = {}
 
-        for(let[key, value] of form.enteries()){
+        for(let[key, value] of form.entries()){
             formData[key] = value
         }
 
@@ -52,25 +67,38 @@ const UserAuthForm = ({type}) => {
         }
 
 
+        userAuthThroughServer(serverRoute, formData)
+
     }
 
     return (
+        access_token ? 
+        <Navigate to="/" /> :
         <AnimationWrapper keyvalue={type}>
             <section className="h-cover flex items-center justify-center">
             <Toaster />
-                <form ref={authForm} className="w-[80%] max-w-[400px]">
+                <form ref={authForm} className="w-[80%] max-w-[400px]" onSubmit={handleSubmit}>
                     <h1 className="text-4xl font-gelasio capitalize text-center mb-24">
                         {type == "sign-in" ? "Welcome back" : "Join us today"}
                     </h1>
                     {
-                        type != "sign-in" ?
-                        <InputBox 
-                            name="fullname"
-                            type="text"
-                            placeholder="full name"
-                            icon="fi-rr-user"
-                        />
-                        : ""
+                        type != "sign-in" ? (
+                            <>
+                                <InputBox 
+                                    name="fullname"
+                                    type="text"
+                                    placeholder="full name"
+                                    icon="fi-rr-user"
+                                />
+
+                                <InputBox
+                                    name="username"
+                                    type="text"
+                                    placeholder="Username"
+                                    icon="fi-rr-at"
+                                />
+                            </>
+                        ) : ""
                     }
 
                     <InputBox 
@@ -90,7 +118,6 @@ const UserAuthForm = ({type}) => {
                     <button 
                         className="btn-dark center mt-14"
                         type="submit"
-                        onClick={handleSubmit}
                     >
                         {type.replace("-", " ")}
                     </button>
