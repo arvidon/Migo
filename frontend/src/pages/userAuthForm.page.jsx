@@ -1,6 +1,6 @@
 import InputBox from "../components/input.component"
 import googleIcon from "../imgs/google.png"
-import { Link } from "react-router-dom"
+import { Link, Navigate } from "react-router-dom"
 import AnimationWrapper from "../common/page-animation"
 import { useRef, useContext } from "react"
 import { Toaster, toast } from "react-hot-toast"
@@ -13,11 +13,13 @@ const UserAuthForm = ({type}) => {
 
     const authForm = useRef()
 
-    let {userAuth: {access_token}, setUserAuth} = useContext(userContext)
+    const { userAuth, setUserAuth } = useContext(userContext)
+    const access_token = userAuth?.access_token
     console.log(access_token)
 
     const userAuthThroughServer = (serverRoute, formData) => {
         axios.post(import.meta.env.VITE_SERVER_DOMAIN + serverRoute, formData).then(({data}) => {
+            console.log("server response:", data)
             storeInSession("user", JSON.stringify(data))
             setUserAuth(data)
         }).catch(({ response }) => {
@@ -39,7 +41,7 @@ const UserAuthForm = ({type}) => {
         let emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/
         let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/
 
-        let form = new FormData(authForm.current)
+        let form = new FormData(e.target)
         let formData = {}
 
         for(let[key, value] of form.entries()){
@@ -72,19 +74,16 @@ const UserAuthForm = ({type}) => {
 
     }
 
-    const handleGoogleAuth = (e) => {
+    const handleGoogleAuth = async (e) => {
         e.preventDefault()
 
-        authWithGoogle().then(user => {
-            let serverRoute = '/google-auth'
-            let formData = {
-                access_token : user.access_token
-            }
-            userAuthThroughServer(serverRoute, formData)
-        }).catch(err => {
-            toast.error('trouble login through google')
-            return console.log(err)
-        })
+        const access_token = await authWithGoogle()
+
+        if (!access_token) {
+            return toast.error("Trouble logging in through Google")
+        }
+
+        userAuthThroughServer("/google-auth", { access_token })
     }
 
     return (
@@ -142,7 +141,7 @@ const UserAuthForm = ({type}) => {
                     my-10 opacity-30 uppercase text-black font-bold">
                         <hr className="w-1/2 border-black"/>
                         <p>or</p>
-                        <hr classname="w-1/2 border-black"/>
+                        <hr className="w-1/2 border-black"/>
                     </div>
 
                     <button className="btn-dark flex items-center justify-center

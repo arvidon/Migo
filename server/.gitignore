@@ -2,8 +2,11 @@ node_modules
 # Keep environment variables out of version control
 .env
 
-/generated/prisma
+server/migo-db28a-firebase-adminsdk-fbsvc-942c6061d7.json
 
 /generated/prisma
 
 /generated/prisma
+
+/generated/prisma
+migo-db28a-firebase-adminsdk-fbsvc-942c6061d7.json

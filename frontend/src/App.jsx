@@ -4,30 +4,30 @@ import UserAuthForm from "./pages/userAuthForm.page";
 import { lookInSession } from "./common/session";
 import { createContext, useEffect, useState } from "react";
 
-
-export const userContext = createContext()
+export const userContext = createContext();
 
 const App = () => {
-
-    const [userAuth, setUserAuth] = useState()
+    const [userAuth, setUserAuth] = useState({ access_token: null });
 
     useEffect(() => {
-        let userInSession = lookInSession('user')
+        const userInSession = lookInSession("user");
 
-        userInSession ? setUserAuth(JSON.parse(userInSession)) : setUserAuth({access_token: NULL})
-    }, [])
-    
+        if (userInSession) {
+            setUserAuth(JSON.parse(userInSession));
+        }
+    }, []);
+
     return (
-        <userContext.Provider value={{userAuth, setUserAuth}}>
+        <userContext.Provider value={{ userAuth, setUserAuth }}>
             <Routes>
-                <Route path='/' element={<Navbar />}>
-                    <Route path='/signin' element={<UserAuthForm type="sign-in" />} />
-                    <Route path='/signup' element={<UserAuthForm type="sign-up" />} />
+                <Route path="/" element={<Navbar />}>
+                    <Route index element={<div>Home</div>} />
+                    <Route path="signin" element={<UserAuthForm type="sign-in" />} />
+                    <Route path="signup" element={<UserAuthForm type="sign-up" />} />
                 </Route>
             </Routes>
         </userContext.Provider>
-        
-    )
-}
+    );
+};
 
 export default App;

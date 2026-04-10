@@ -15,19 +15,21 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig)
 
-const provider = GoogleAuthProvider()
-const auth = getAuth()
+const provider = new GoogleAuthProvider()
+const auth = getAuth(app)
 
-export const authWithGoogle = async() => {
-    let user = null
+export const authWithGoogle = async () => {
+    try {
+        const result = await signInWithPopup(auth, provider)
 
-    await signInWithPopup(auth, provider).then((result) => {
-        user = result.user
-    }).catch((err) => {
+        // this is the token your backend verifyIdToken() expects
+        const access_token = await result.user.getIdToken()
+
+        return access_token
+    } catch (err) {
         console.log(err)
-    })
-
-    return user
+        return null
+    }
 }
