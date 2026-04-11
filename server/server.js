@@ -8,6 +8,9 @@ import cors from 'cors'
 import admin from 'firebase-admin'
 import serviceAccountkey from './migo-db28a-firebase-adminsdk-fbsvc-942c6061d7.json' with {type:"json"}
 import {getAuth} from 'firebase-admin/auth'
+import uploadRoutes from "./routes/upload.js"
+
+
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccountkey)
@@ -18,6 +21,7 @@ const app = express()
 const PORT = 3003
 app.use(express.json())
 app.use(cors())
+app.use(uploadRoutes)
 
 const formatDataToSend = (user) => {
     const access_token = jwt.sign(
