@@ -2,13 +2,23 @@ import { Link } from "react-router-dom"
 import logo from "../imgs/logo.png"
 import AnimationWrapper from "../common/page-animation"
 import defaultBanner from "../imgs/banner.png"
+import { uploadImage } from "../common/cloudflare"
+import {useRef} from "react"
 
 
 const BlogEditor = () => {
-
+    const blogBannerRef = useRef()
+    
     const handleBannerUpload = (e) => {
         let img = e.target.files[0]
-        console.log(img)
+
+        if (img) {
+            uploadImage(img).then((url) => {
+                if (url) {
+                    blogBannerRef.current.src = url
+                }
+            })
+        }
     }
     return(
         <>
@@ -36,13 +46,18 @@ const BlogEditor = () => {
 
                         <div className="relative aspect-video hover:opacity-80 bg-white border-2 border-grey">
                             <label htmlFor="uploadBanner">
-                                <img src={defaultBanner} />
+                                <img 
+                                    ref={blogBannerRef}
+                                    src={defaultBanner} 
+                                    className="z-20"
+                                />
+
                                 <input 
                                     id="uploadBanner"
                                     type="file"
-                                    accept=".png , .jpeg , .jpg"
+                                    accept=".png,.jpeg,.jpg"
                                     hidden
-                                    onChange={handleBannerUpload}      
+                                    onChange={handleBannerUpload}
                                 />
                             </label>
                         </div>
